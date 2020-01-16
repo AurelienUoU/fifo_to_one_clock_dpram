@@ -23,8 +23,11 @@ yosys -s yosys_script/larger_case.ys
 ```
 
 This case fails at flattening (through synth command) and provides the following error message:
+
 "ERROR: Technology map yielded processes -> this is not supported (use -autoproc to run 'proc' automatically)."
 
 According to the [documentation](http://www.clifford.at/yosys/cmd_flatten.html), flattening is quite similar to techmapping and it could explain why this message appears.
+
+## What is my need?
 
 I absolutely need to flatten to be able to techmap the fifo to my DPRAM, otherwise the fifo is syntesized as an independant module and do not care about the clock merging.
