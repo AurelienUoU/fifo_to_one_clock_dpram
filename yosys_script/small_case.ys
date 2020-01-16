@@ -1,0 +1,36 @@
+# Yosys synthesis script for small case of fifo mapped to 1clock DPRAM
+# read Verilog 
+read_verilog -nolatches -nomem2reg ./Verilog_netlists/2clock_fifo.v 
+read_verilog -lib ./my_lib/cells_sim.v
+
+ 
+synth -run coarse -top top_wrapper -flatten
+opt -fast
+
+memory -nomap
+opt_clean
+
+memory_bram -rules ./my_lib/brams.txt
+techmap -map ./my_lib/brams_map.v
+opt -fast -mux_undef -undriven -fine
+memory_map
+
+# Technology mapping
+hierarchy -top top_wrapper
+proc
+
+# Synthesis
+synth -top top_wrapper -flatten
+clean
+techmap -D NO_LUT -map ./my_lib/ff_techmap.v
+
+# LUT mapping 
+abc -lut 6
+
+# Check 
+synth -run check
+
+# Clean and output blif 
+opt_clean -purge
+write_blif ./results/small_case/2clock_fifo_post_yosys.blif
+write_verilog ./results/small_case/2clock_fifo_post_yosys.v

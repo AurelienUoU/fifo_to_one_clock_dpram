@@ -1,0 +1,37 @@
+# Yosys synthesis script for failing case of fifo mapped to 1clock DPRAM
+# read Verilog 
+read_verilog -nolatches -nomem2reg ./Verilog_netlists/2clock_fifo.v 
+read_verilog -nolatches -nomem2reg ./Verilog_netlists/full_design/*.v
+read_verilog -lib ./my_lib/cells_sim.v
+
+ 
+synth -run coarse -top LMAC_CORE_TOP_SYNTH -flatten
+opt -fast
+
+memory -nomap
+opt_clean
+
+memory_bram -rules ./my_lib/brams.txt
+techmap -map ./my_lib/brams_map.v
+opt -fast -mux_undef -undriven -fine
+memory_map
+
+# Technology mapping
+hierarchy -top LMAC_CORE_TOP_SYNTH
+proc
+
+# Synthesis
+synth -top LMAC_CORE_TOP_SYNTH -flatten
+clean
+techmap -D NO_LUT -map ./my_lib/ff_techmap.v
+
+# LUT mapping 
+abc -lut 6
+
+# Check 
+synth -run check
+
+# Clean and output blif 
+opt_clean -purge
+write_blif ./results/larger_case/top_post_yosys.blif
+write_verilog ./results/larger_case/top_post_yosys.v
