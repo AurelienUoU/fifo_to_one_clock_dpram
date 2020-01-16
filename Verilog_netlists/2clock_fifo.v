@@ -5,7 +5,7 @@ module top_wrapper (
 	input       clk,
 	output[7:0] dataout );
 
-	fifo_2clk DUT (
+	asynch_fifo DUT (
 		.wrclk	(clk),
 		.rdclk	(clk),
 		.wren	(wen),
@@ -15,7 +15,7 @@ module top_wrapper (
 
 endmodule 
 
-module fifo_2clk # (parameter WIDTH = 8,         // considering 8X8 fifo
+module asynch_fifo # (parameter WIDTH = 8,         // considering 8X8 fifo
 								DEPTH = 16,
 								PTR	= 4 )          // 2**3 = 8 (DEPTH)
 

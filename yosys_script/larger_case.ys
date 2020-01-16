@@ -4,8 +4,8 @@ read_verilog -nolatches -nomem2reg ./Verilog_netlists/2clock_fifo.v
 read_verilog -nolatches -nomem2reg ./Verilog_netlists/full_design/*.v
 read_verilog -lib ./my_lib/cells_sim.v
 
- 
-synth -run coarse -top LMAC_CORE_TOP_SYNTH -flatten
+hierarchy -auto-top
+synth -run coarse -flatten -top LMAC_CORE_TOP
 opt -fast
 
 memory -nomap
@@ -17,11 +17,11 @@ opt -fast -mux_undef -undriven -fine
 memory_map
 
 # Technology mapping
-hierarchy -top LMAC_CORE_TOP_SYNTH
+hierarchy -top LMAC_CORE_TOP
 proc
 
 # Synthesis
-synth -top LMAC_CORE_TOP_SYNTH -flatten
+synth -top LMAC_CORE_TOP -flatten
 clean
 techmap -D NO_LUT -map ./my_lib/ff_techmap.v
 
